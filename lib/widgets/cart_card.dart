@@ -6,11 +6,11 @@ class CartCard extends StatefulWidget {
   final String name;
   final String price;
   final String quantity;
-  final String image;
+  final List<dynamic> imageList;
   final String description;
   final String discount;
   CartCard(
-      {this.image,
+      {this.imageList,
       this.price,
       this.quantity,
       this.name,
@@ -32,7 +32,7 @@ class _CartCardState extends State<CartCard> {
     String quan = widget.quantity;
     _quantity = int.parse(quan);
     String pr = widget.price;
-    _price = int.parse(pr);
+    _price = double.parse(pr);
   }
 
   @override
@@ -40,7 +40,7 @@ class _CartCardState extends State<CartCard> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Material(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(10.0),
         elevation: 5.0,
         color: Color(mywhite1),
         child: Slidable(
@@ -55,10 +55,10 @@ class _CartCardState extends State<CartCard> {
                   width: 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.0),
-                        bottomLeft: Radius.circular(20.0)),
+                        topLeft: Radius.circular(10.0),
+                        bottomLeft: Radius.circular(10.0)),
                     image: DecorationImage(
-                        image: NetworkImage(widget.image), fit: BoxFit.cover),
+                        image: NetworkImage(widget.imageList[0]), fit: BoxFit.cover),
                   ),
                 ),
                 SizedBox(width: 10.0),
@@ -82,6 +82,7 @@ class _CartCardState extends State<CartCard> {
                       height: 30,
                     ),
                     Text(
+
                       '${_price * _quantity}',
                       style: TextStyle(
                           fontFamily: 'Nexa',
@@ -116,6 +117,7 @@ class _CartCardState extends State<CartCard> {
                     SizedBox(height: 10.0),
                     Text(
                       '${_quantity}',
+
                       style: TextStyle(
                         fontFamily: 'Nexa',
                       ),
@@ -129,7 +131,7 @@ class _CartCardState extends State<CartCard> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              if (_quantity > 0) {
+                              if (_quantity > 1) {
                                 _quantity--;
                               }
                             });

@@ -165,7 +165,7 @@ class ProductSearch extends SearchDelegate<Product> {
                 print(searchList.length);
                 showResults(context);
               },
-              leading: Icon(Icons.menu),
+              leading: Icon(Icons.search),
               title: RichText(
                 text: TextSpan(
                     text: suggestionList[index].substring(0, query.length),

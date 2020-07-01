@@ -149,7 +149,7 @@ Widget _callProductCard(DocumentSnapshot data, dynamic model, String category) {
       description: dataset.description,
       price: dataset.price,
       discount: dataset.discount,
-      //image: dataset.image,
+      imageList: dataset.imageList,
       quantity: dataset.quantity,
     );
   }

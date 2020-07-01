@@ -7,6 +7,7 @@ import 'package:flutter_conditional_rendering/conditional.dart';
 //import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shoppingapp2/admin/add_products_admin.dart';
+import 'package:shoppingapp2/admin/upload_history.dart';
 //import 'package:scoped_model/scoped_model.dart';
 //import 'package:shoppingapp2/admin/add_product_admin.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
@@ -260,7 +261,9 @@ class _AdminDrawerWidgetsState extends State<AdminDrawerWidgets> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  
+                },
                 child: ListTile(
                   leading: Icon(Icons.change_history, color: Colors.blueAccent),
                   title: Text('Update a Product'),
@@ -274,7 +277,9 @@ class _AdminDrawerWidgetsState extends State<AdminDrawerWidgets> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context,UploadHistory.id);
+                },
                 child: ListTile(
                   leading: Icon(Icons.arrow_upward, color: Colors.blueAccent),
                   title: Text('Upload History'),

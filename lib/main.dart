@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shoppingapp2/admin/add_products_admin.dart';
 import 'package:shoppingapp2/admin/image_capture.dart';
+import 'package:shoppingapp2/admin/upload_history.dart';
 import 'package:shoppingapp2/services/authservice.dart';
 import 'package:shoppingapp2/services/mainservice.dart';
 //import 'package:shoppingapp2/services/mainservice.dart';
@@ -45,6 +46,7 @@ class _MyAppState extends State<MyApp> {
             FavouritesView.id : (context) => FavouritesView(),
             AddProduct.id : (context) => AddProduct(),
             ImageCapture.id : (context) => ImageCapture(),
+            UploadHistory.id : (context) => UploadHistory(),
           },
         ),
       ),
