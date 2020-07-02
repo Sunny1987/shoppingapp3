@@ -24,12 +24,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   getAllPrice(QuerySnapshot snapshot) async {
     var docs = await snapshot.documents;
-    List list =
-        docs.map((document) => Favourites.fromSnapshot(document)).toList();
+    List list = docs.map((document) => Cart.fromSnapshot(document)).toList();
     list.forEach((document) {
-      Favourites fav = document;
+      Cart cart = document;
       setState(() {
-        _subTotal = _subTotal + double.parse(fav.price);
+        _subTotal = _subTotal +
+            (double.parse(cart.price) * (double.parse(cart.quantity)));
       });
     });
     // product_map = Map.fromIterable(docs,
@@ -39,7 +39,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   getSubTotal() async {
     final prod_snapshots = await Firestore.instance
-        .collection(EnumToString.parse(CollectionTypes.sarees))
+        .collection(EnumToString.parse(CollectionTypes.user_cart))
         .getDocuments();
     getAllPrice(prod_snapshots);
   }
@@ -52,6 +52,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   @override
   Widget build(BuildContext context) {
+    //getSubTotal();
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.grey.shade300,

@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
 import 'package:shoppingapp2/models/appuser.dart';
+import 'package:shoppingapp2/models/cart_model.dart';
 import 'package:shoppingapp2/models/favourites_model.dart';
 import 'package:shoppingapp2/models/product_model.dart';
 import 'package:shoppingapp2/services/mainservice.dart';
@@ -115,25 +116,84 @@ class AuthService extends Model {
     }
   }
 
-  Future<bool> uploadUserCart(String uid, String name, String description,
-      String price, String discount, String quantity, List<dynamic> imageList) async {
-    try {
-      await Firestore.instance.collection('user_cart').document().setData({
-        'id': uid,
-        'name': name,
-        'description': description,
-        'price': price,
-        'discount': discount,
-        'quantity': quantity,
-        //'docId': docId,
-        'imageList': imageList,
-        'createdAt': FieldValue.serverTimestamp()
+  Future<bool> uploadUserCart(
+      String uid,
+      String name,
+      String description,
+      String price,
+      String discount,
+      String quantity,
+      List<dynamic> imageList) async {
+    //logic to check if the product already exists
+
+    final snapshot = await Firestore.instance
+        .collection(EnumToString.parse(CollectionTypes.user_cart))
+        .getDocuments();
+    //var docs = snapshot.documents;
+    bool status = snapshot.documents
+        .map((element) => Cart.fromMap(element.data))
+        .any((item) => item.name == name);
+    if (status) {
+      String docId = '';
+      int quant = 0;
+      double _price = double.parse(price);
+      double _total_price =0.00;
+      var docs = snapshot.documents;
+      Map<String, Cart> cart = Map.fromIterable(docs,
+          key: (doc) => doc.documentID, value: (doc) => Cart.fromSnapshot(doc));
+
+      cart.forEach((key, value) {
+        if (value.name == name) {
+          docId = key;
+          quant = int.parse(value.quantity);
+          //_price = double.parse(value.price);
+        }
       });
-      return Future.value(true);
-    } catch (e) {
-      print(e.toString());
-      return Future.value(false);
+      int quant1 = int.parse(quantity);
+      quant = quant + quant1;
+
+      _total_price = _price * quant;
+
+      try {
+        await Firestore.instance
+            .collection(EnumToString.parse(CollectionTypes.user_cart))
+            .document(docId)
+            .updateData({
+          'quantity': quant.toString(),
+          'price': _total_price.toString(),
+        });
+        return Future.value(true);
+      } catch (e) {
+        print(e.toString());
+        return Future.value(false);
+      }
+    } else {
+      try {
+        await Firestore.instance
+            .collection(EnumToString.parse(CollectionTypes.user_cart))
+            .document()
+            .setData({
+          'id': uid,
+          'name': name,
+          'description': description,
+          'price': price,
+          'discount': discount,
+          'quantity': quantity,
+          //'docId': docId,
+          'imageList': imageList,
+          'createdAt': FieldValue.serverTimestamp()
+        });
+        return Future.value(true);
+      } catch (e) {
+        print(e.toString());
+        return Future.value(false);
+      }
     }
+    //
+
+    //   Map<String, Product> product = Map.fromIterable(docs,
+    // key: (doc) => doc.documentID,
+    // value: (doc) => Product.fromSnapshot(doc));
   }
 
   getUsersData(AppUser user) {
@@ -149,8 +209,15 @@ class AuthService extends Model {
     });
   }
 
-  void firestoreAction(bool isFav, String docId, String uid, String name,
-      String description, String price, String discount, List<dynamic> imageList) async {
+  void firestoreAction(
+      bool isFav,
+      String docId,
+      String uid,
+      String name,
+      String description,
+      String price,
+      String discount,
+      List<dynamic> imageList) async {
     if (isFav) {
       await uploadUserFavourites(
           uid, name, description, price, discount, imageList);
@@ -201,11 +268,11 @@ class AuthService extends Model {
     List name = [];
 
     List list =
-        docs.map((document) => Favourites.fromSnapshot(document)).toList();
+        docs.map((document) => Product.fromSnapshot(document)).toList();
 
     list.forEach((document) {
-      Favourites fav = document;
-      name.add(fav.name);
+      Product prod = document;
+      name.add(prod.name);
       //list_description.add(fav.description);
     });
 
@@ -300,26 +367,25 @@ class AuthService extends Model {
       String category) async {
     //call uploadImage function
     _isLoading = true;
-    List<String> imagePathList =[];
+    List<String> imagePathList = [];
 
     print(imageFile);
     print(name);
     print(_isLoading);
 
-    for(File file in imageFileList) {
+    for (File file in imageFileList) {
       var imageLocation = await uploadImage(file);
       imagePathList.add(imageLocation);
     }
 
-
     //var imageLocation = await uploadImage(imageFile);
     var status = await uploadProductToDatabase(
         imagePathList,
-        //imageLocation, 
-        name, 
-        description, 
-        price, 
-        discount, 
+        //imageLocation,
+        name,
+        description,
+        price,
+        discount,
         category);
     _isLoading = false;
     if (status) {
@@ -367,7 +433,6 @@ class AuthService extends Model {
         var ref = await FirebaseStorage().ref().child(imageLocation);
         var imageString = await ref.getDownloadURL();
         ImageLocUrl.add(imageString);
-
       }
 
       await Firestore.instance.collection('sarees').document().setData({
@@ -427,6 +492,35 @@ class AuthService extends Model {
   }
 
   List<File> get imageFileList {
-    return  _imageFiles;
+    return _imageFiles;
+  }
+
+  Future<Map<String, Product>> getProdDocIds(QuerySnapshot snapshot) async {
+    var docs = await snapshot.documents;
+
+    Map<String, Product> product = Map.fromIterable(docs,
+        key: (doc) => doc.documentID,
+        value: (doc) => Product.fromSnapshot(doc));
+
+    return product;
+  }
+
+  Future<Map<String, Product>> updateCartCard() async {
+    final snapshot = await Firestore.instance
+        .collection(EnumToString.parse(CollectionTypes.user_cart))
+        .getDocuments();
+    return await getProdDocIds(snapshot);
+  }
+
+  void uploadCart(
+      String uid, String price, String quantity, String docId) async {
+    try {
+      await Firestore.instance
+          .collection(EnumToString.parse(CollectionTypes.user_cart))
+          .document(docId)
+          .updateData({'price': price, 'quantity': quantity});
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
