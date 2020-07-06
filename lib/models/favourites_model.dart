@@ -6,7 +6,7 @@ class Favourites {
   String price;
   String discount;
   List<dynamic> imageList;
-  //String category;
+  String category;
   DocumentReference refernce;
 
   Favourites({
@@ -15,7 +15,7 @@ class Favourites {
     this.price,
     this.discount,
     this.imageList,
-    //this.category
+    this.category
     });
 
   Favourites.fromMap(Map<String, dynamic> map, {this.refernce})
@@ -23,7 +23,7 @@ class Favourites {
         description = map['description'],
         price = map['price'],
         discount = map['discount'],
-        //category = map['category'],
+        category = map['category'],
         imageList = map['imagelist'];
 
   Favourites.fromSnapshot(DocumentSnapshot snapshot)

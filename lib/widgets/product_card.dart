@@ -11,23 +11,9 @@ import 'package:shoppingapp2/services/mainservice.dart';
 import 'package:shoppingapp2/views/product_details.dart';
 
 class ProductCard extends StatefulWidget {
-  final List<dynamic> imageList;
-  final String name;
-  final String price;
-  final String description;
-  final String discount;
-  final String category;
+  final Product product;
 
-  ProductCard({
-    this.imageList,
-    this.name,
-    this.price,
-    this.description,
-    this.discount,
-    this.category,
-    //this.map,
-    //this.docID
-  });
+  ProductCard({this.product});
 
   @override
   _ProductCardState createState() => _ProductCardState();
@@ -38,60 +24,6 @@ class _ProductCardState extends State<ProductCard> {
   Map<String, Favourites> map;
   String docId = '';
   Map<String, Product> product_map;
-  // String image = widget.imageList[0];
-
-  getFav(
-    QuerySnapshot snapshot,
-    AppUser user,
-  ) async {
-    //var snapshot = await model.getFavourites(user);
-
-    var docs = await snapshot.documents;
-    List list =
-        docs.map((document) => Favourites.fromSnapshot(document)).toList();
-
-    map = Map.fromIterable(docs,
-        key: (doc) => doc.documentID,
-        value: (doc) => Favourites.fromSnapshot(doc));
-
-    list.forEach((document) {
-      Favourites fav = document;
-      if (mounted) {
-        if (widget.imageList[0] == fav.imageList[0]) {
-          setState(() {
-            _isFav = true;
-          });
-          // } else {
-          //   setState(() {
-          //     _isFav = false;
-          //   });
-        }
-      }
-    });
-  }
-
-  getAllDocIds(QuerySnapshot snapshot) async {
-    var docs = await snapshot.documents;
-
-    product_map = Map.fromIterable(docs,
-        key: (doc) => doc.documentID,
-        value: (doc) => Product.fromSnapshot(doc));
-  }
-
-  callFav(BuildContext context) async {
-    AppUser user = Provider.of<AppUser>(context);
-    final snapshot = await Firestore.instance
-        .collection(EnumToString.parse(CollectionTypes.user_favourites))
-        //.collection('user_favourites')
-        .where('id', isEqualTo: '${user.uid}')
-        .getDocuments();
-    await getFav(snapshot, user);
-    final prod_snapshots = await Firestore.instance
-        .collection(EnumToString.parse(CollectionTypes.sarees))
-        .getDocuments();
-
-    await getAllDocIds(prod_snapshots);
-  }
 
   @override
   void initState() {
@@ -101,8 +33,6 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     AppUser user = Provider.of<AppUser>(context);
-    callFav(context);
-    //print(widget.imageList[0]);
 
     return ScopedModelDescendant<MainService>(
       builder: (BuildContext context, Widget child, MainService model) {
@@ -110,18 +40,12 @@ class _ProductCardState extends State<ProductCard> {
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ProductDetailsPage(
-                      imageList: widget.imageList,
-                      name: widget.name,
-                      price: widget.price,
+                      product: widget.product,
                       isFav: _isFav,
-                      //isFav: _isFav,
-                      description: widget.description,
                       model: model,
                       user: user,
-                      discount: widget.discount,
                       map: map,
-                      prod_map: product_map,
-                      category: widget.category,
+                      //prod_map: product_map,
                     )));
           },
           child: Container(
@@ -132,7 +56,10 @@ class _ProductCardState extends State<ProductCard> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
               image: DecorationImage(
-                  image: NetworkImage(widget.imageList[0]), fit: BoxFit.cover),
+                  image: NetworkImage(widget.product.imageList[0]
+                      //widget.imageList[0]
+                      ),
+                  fit: BoxFit.cover),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -145,59 +72,76 @@ class _ProductCardState extends State<ProductCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Text(
-                        '${widget.name}',
+                        '${widget.product.name}',
                         style: TextStyle(
                             fontFamily: 'Nexa', color: Color(myyellow)),
                       ),
                       Text(
-                        '${widget.price}',
+                        '${widget.product.price}',
                         style: TextStyle(
                             fontFamily: 'Nexa', color: Color(myyellow)),
                       ),
                       Material(
                         elevation: 5.0,
                         borderRadius: BorderRadius.circular(30.0),
-                        child: IconButton(
-                            icon: _isFav
-                                ? Icon(
-                                    Icons.favorite,
-                                    color: Color(myyellow),
-                                  )
-                                : Icon(
-                                    Icons.favorite_border,
-                                    color: Color(myyellow),
-                                  ),
-                            onPressed: () {
-                              setState(() {
-                                _isFav = !_isFav;
-                                if (map != null) {
-                                  map.forEach((key, value) {
-                                    if (value.imageList[0] ==
-                                        widget.imageList[0]) {
-                                      docId = key;
-                                    }
-                                  });
-                                }
-                                if (map == null) {
-                                  product_map.forEach((key, value) {
-                                    if (value.imageList[0] ==
-                                        widget.imageList[0]) {
-                                      docId = key;
-                                    }
-                                  });
-                                }
+                        child:
+                            FutureBuilder<Map<bool, Map<String, Favourites>>>(
+                          future: model.callFav(
+                              context, widget.product.imageList[0]),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<Map<bool, Map<String, Favourites>>>
+                                  snapshot) {
+                            if (snapshot.hasData) {
+                              snapshot.data.forEach((key, value) {
+                                _isFav = key;
+                                map = value;
                               });
+                            }
 
-                              model.firestoreAction(
-                                  _isFav,
-                                  docId,
-                                  user.uid,
-                                  widget.name,
-                                  widget.description,
-                                  widget.price,
-                                  widget.discount,
-                                  widget.imageList);
-                            }),
+                            return IconButton(
+                              icon: _isFav
+                                  ? Icon(
+                                      Icons.favorite,
+                                      color: Color(myyellow),
+                                    )
+                                  : Icon(
+                                      Icons.favorite_border,
+                                      color: Color(myyellow),
+                                    ),
+                              onPressed: () {
+                                setState(() {
+                                  _isFav = !_isFav;
+                                  if (map != null) {
+                                    map.forEach((key, value) {
+                                      if (value.imageList[0] ==
+                                          widget.product.imageList[0]) {
+                                        docId = key;
+                                      }
+                                    });
+                                  }
+                                  if (map == null) {
+                                    product_map.forEach((key, value) {
+                                      if (value.imageList[0] ==
+                                          widget.product.imageList[0]) {
+                                        docId = key;
+                                      }
+                                    });
+                                  }
+                                });
+
+                                // model.firestoreAction(
+                                //     _isFav,
+                                //     docId,
+                                //     user.uid,
+                                //     widget.name,
+                                //     widget.description,
+                                //     widget.price,
+                                //     widget.discount,
+                                //     widget.imageList);
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),

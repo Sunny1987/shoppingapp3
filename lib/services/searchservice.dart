@@ -3,11 +3,11 @@ import 'dart:ui';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:enum_to_string/enum_to_string.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:enum_to_string/enum_to_string.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scoped_model/scoped_model.dart';
+//import 'package:scoped_model/scoped_model.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
 import 'package:shoppingapp2/models/appuser.dart';
 import 'package:shoppingapp2/models/favourites_model.dart';
@@ -16,7 +16,7 @@ import 'package:shoppingapp2/models/favourites_model.dart';
 import 'package:shoppingapp2/models/product_model.dart';
 import 'package:shoppingapp2/services/authservice.dart';
 import 'package:shoppingapp2/views/product_details.dart';
-import 'package:shoppingapp2/widgets/product_card.dart';
+//import 'package:shoppingapp2/widgets/product_card.dart';
 
 import 'mainservice.dart';
 
@@ -73,16 +73,17 @@ class ProductSearch extends SearchDelegate<Product> {
 
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => ProductDetailsPage(
-                        imageList: data.imageList,
-                        name: data.name,
-                        price: data.price,
+                        product: data,
+                        // imageList: data.imageList,
+                        // name: data.name,
+                        // price: data.price,
                         isFav: _isFav,
-                        description: data.description,
+                        // description: data.description,
                         model: model,
                         user: user,
-                        discount: data.discount,
+                        // discount: data.discount,
                         map: map,
-                        category: data.category,
+                        // category: data.category,
                       )));
             },
             child: Container(

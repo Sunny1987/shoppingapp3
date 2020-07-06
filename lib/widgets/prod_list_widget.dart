@@ -7,6 +7,7 @@ import 'package:shoppingapp2/models/cart_model.dart';
 import 'package:shoppingapp2/models/favourites_model.dart';
 import 'package:shoppingapp2/models/product_model.dart';
 import 'package:shoppingapp2/widgets/cart_card.dart';
+import 'package:shoppingapp2/widgets/favourite_card.dart';
 import 'package:shoppingapp2/widgets/product_card.dart';
 //import 'package:testapp1/models/favoutites_model.dart';
 // import 'package:testapp1/models/product_model.dart';
@@ -89,7 +90,7 @@ class _MyProdListViewState extends State<MyProdListView> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: _buildSnapshot(context, snapshot.data.documents,
-                  widget.viewType, widget.model,widget.category));
+                  widget.viewType, widget.model, widget.category));
         }
       },
     );
@@ -97,21 +98,25 @@ class _MyProdListViewState extends State<MyProdListView> {
 }
 
 Widget _buildSnapshot(BuildContext context, List<DocumentSnapshot> snapshot,
-    ViewTypes viewType, dynamic model,String category) {
+    ViewTypes viewType, dynamic model, String category) {
   Widget widget;
 
   //for listview
   if (viewType == ViewTypes.listView) {
     widget = ListView(
       padding: const EdgeInsets.only(top: 20.0),
-      children: snapshot.map((data) => _callProductCard(data, model,category)).toList(),
+      children: snapshot
+          .map((data) => _callProductCard(data, model, category))
+          .toList(),
     );
 
     //for gridview
   } else if (viewType == ViewTypes.gridView) {
     widget = GridView.count(
       crossAxisCount: 2,
-      children: snapshot.map((data) => _callProductCard(data, model,category)).toList(),
+      children: snapshot
+          .map((data) => _callProductCard(data, model, category))
+          .toList(),
     );
   }
 
@@ -123,23 +128,14 @@ Widget _callProductCard(DocumentSnapshot data, dynamic model, String category) {
 
   if (model == Favourites) {
     final dataset = Favourites.fromSnapshot(data);
-    widget = ProductCard(
-      name: dataset.name,
-      description: dataset.description,
-      price: dataset.price,
-      discount: dataset.discount,
-      imageList: dataset.imageList,
+    widget = FavouriteCard(
+      fav: dataset,
     );
   }
   if (model == Product) {
     final dataset = Product.fromSnapshot(data);
     widget = ProductCard(
-      name: dataset.name,
-      description: dataset.description,
-      price: dataset.price,
-      discount: dataset.discount,
-      imageList: dataset.imageList,
-      category: dataset.category,
+      product: dataset,
     );
   }
   if (model == Cart) {
