@@ -1,5 +1,3 @@
-//import 'dart:io';
-
 import 'dart:io';
 import 'dart:math';
 
@@ -209,38 +207,51 @@ class AuthService extends Model {
     });
   }
 
-  void firestoreAction(
-      bool isFav,
-      String docId,
-      String uid,
-      String name,
-      String description,
-      String price,
-      String discount,
-      List<dynamic> imageList) async {
+  void firestoreAction(bool isFav, String docId, String uid,
+      {Product product, Favourites fav}) async {
     if (isFav) {
-      await uploadUserFavourites(
-          uid, name, description, price, discount, imageList);
+      if (fav == null && product != null) {
+        await uploadUserFavourites(uid, product: product);
+      }
+      if (fav != null && product == null) {
+        await uploadUserFavourites(uid, fav: fav);
+      }
     } else {
       await deleteUserFavourites(docId);
     }
   }
 
-  void uploadUserFavourites(String uid, String name, String description,
-      String price, String discount, List<dynamic> imageList) async {
+  void uploadUserFavourites(String uid,
+      {Product product, Favourites fav}) async {
     try {
-      await Firestore.instance
-          .collection('user_favourites')
-          .document()
-          .setData({
-        'id': uid,
-        'name': name,
-        'description': description,
-        'price': price,
-        'discount': discount,
-        'imagelist': imageList,
-        'createdAt': FieldValue.serverTimestamp()
-      });
+      if (fav == null && product != null) {
+        await Firestore.instance
+            .collection('user_favourites')
+            .document()
+            .setData({
+          'id': uid,
+          'name': product.name,
+          'description': product.description,
+          'price': product.price,
+          'discount': product.discount,
+          'imagelist': product.imageList,
+          'createdAt': FieldValue.serverTimestamp()
+        });
+      }
+      if (fav != null && product == null) {
+        await Firestore.instance
+            .collection('user_favourites')
+            .document()
+            .setData({
+          'id': uid,
+          'name': fav.name,
+          'description': fav.description,
+          'price': fav.price,
+          'discount': fav.discount,
+          'imagelist': fav.imageList,
+          'createdAt': FieldValue.serverTimestamp()
+        });
+      }
     } catch (e) {
       print(e.toString());
     }
@@ -315,22 +326,22 @@ class AuthService extends Model {
     return favstatus;
   }
 
-  Stream  getAllDocIds() {
-    //Iterable<Map<String,Product>> data;
+  Future<Map<String, Product>> getAllDocIds() async {
+    Map<String, Product> prod_map;
+    try {
+      var results = await Firestore.instance
+          .collection(EnumToString.parse(CollectionTypes.sarees))
+          .getDocuments();
 
-    var data = Firestore.instance
-        .collection(EnumToString.parse(CollectionTypes.sarees))
-        .snapshots()
-        .map((docs) => docs.documents
-            .map((doc) => {'prod':Product.fromSnapshot(doc)}));
+      var docs = results.documents;
+      prod_map = Map.fromIterable(docs,
+          key: (doc) => doc.documentID,
+          value: (doc) => Product.fromSnapshot(doc));
 
-    //var docs = await snapshot.documents;
-
-    // product_map = Map.fromIterable(docs,
-    //     key: (doc) => doc.documentID,
-    //     value: (doc) => Product.fromSnapshot(doc));
-
-    return data;
+      return prod_map;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<Map<bool, Map<String, Favourites>>> callFav(
@@ -342,15 +353,6 @@ class AuthService extends Model {
         .where('id', isEqualTo: '${user.uid}')
         .getDocuments();
     favstatus = await getFavData(snapshot, user, image);
-    // final prod_snapshots =
-    //     await Firestore.instance.collection('sarees').getDocuments();
-    var prod_map = getAllDocIds();
-  
-  prod_map.forEach(print);
-  // prod_map.forEach((element) {
-  //   print(element['prod']);
-  //  });
-   
 
     Map<bool, Map<String, Favourites>> mymap = {favstatus: map};
     return mymap;

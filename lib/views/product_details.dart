@@ -67,13 +67,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
   @override
   void initState() {
     super.initState();
-    // if(widget.product!=null && widget.fav == null){
-    //     dataset = widget.product;
-    // }
-    // if(widget.product==null && widget.fav != null){
-    //   dataset = widget.fav;
-    // }
-
     _isFav = widget.isFav;
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
@@ -149,7 +142,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                         context: context, delegate: ProductSearch(names));
                   }),
               SizedBox(width: 40.0),
-
               Stack(
                 children: <Widget>[
                   IconButton(
@@ -183,14 +175,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                   ),
                 ],
               )
-
-              // IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {
-              //    Navigator.pushNamed(context, ShoppingCart.id);
-              // }),
             ],
           ),
-
-          //IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {}),
         ),
         endDrawer: MyDrawer(),
         body: GestureDetector(
@@ -249,61 +235,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                   .toList(),
                             ),
                           ),
-                          // Container(
-                          //   width: double.infinity,
-                          //   height: 300.0,
-                          //   decoration: BoxDecoration(
-                          //     image: DecorationImage(
-                          //         image: NetworkImage(widget.imageList[0]),
-                          //         fit: BoxFit.cover),
-                          //   ),
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.end,
-                          //     children: <Widget>[
-                          //       Padding(
-                          //         padding: const EdgeInsets.only(right: 20.0),
-                          //         child: Material(
-                          //           elevation: 8.0,
-                          //           borderRadius: BorderRadius.circular(30.0),
-                          //           child:
-                          //IconButton(
-                          //               icon: _isFav
-                          //                   ? Icon(
-                          //                       Icons.favorite,
-                          //                       color: Color(myyellow),
-                          //                     )
-                          //                   : Icon(
-                          //                       Icons.favorite_border,
-                          //                       color: Color(myyellow),
-                          //                     ),
-                          //               onPressed: () {
-                          //                 // setState(() {
-                          //                 //   _isFav = !_isFav;
-                          //                 //   widget.map.forEach((key, value) {
-                          //                 //     if (value.image == widget.image) {
-                          //                 //       docId = key;
-                          //                 //     }
-                          //                 //   });
 
-                          //                 //   widget.model.firestoreAction(
-                          //                 //       _isFav,
-                          //                 //       docId,
-                          //                 //       widget.user.uid,
-                          //                 //       widget.name,
-                          //                 //       widget.description,
-                          //                 //       widget.price,
-                          //                 //       widget.discount,
-                          //                 //       widget.image);
-                          //                 // });
-                          //               }),
-                          //         ),
-                          //       )
-                          //     ],
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   height: 100,
-                          // ),
                           Expanded(
                             //flex: 4,
                             child: Row(
@@ -384,47 +316,69 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                                         onPressed: () {
                                                           setState(() {
                                                             _isFav = !_isFav;
-                                                            // if (widget.map !=
-                                                            //     null) {
-                                                            //   widget.map
-                                                            //       .forEach((key,
-                                                            //           value) {
-                                                            //     if (value.imageList[
-                                                            //             0] ==
-                                                            //         widget.imageList[
-                                                            //             0]) {
-                                                            //       docId = key;
-                                                            //     }
-                                                            //   });
-                                                            // }
-                                                            // if (widget.map ==
-                                                            //     null) {
-                                                            //   widget.prod_map
-                                                            //       .forEach((key,
-                                                            //           value) {
-                                                            //     if (value.imageList[
-                                                            //             0] ==
-                                                            //         widget.imageList[
-                                                            //             0]) {
-                                                            //       docId = key;
-                                                            //     }
-                                                            //   });
-                                                            // }
+                                                            if (widget.map !=
+                                                                null) {
+                                                              widget.map
+                                                                  .forEach((key,
+                                                                      value) {
+                                                                if (widget
+                                                                        .product !=
+                                                                    null) {
+                                                                  if (value.imageList[
+                                                                          0] ==
+                                                                      widget
+                                                                          .product
+                                                                          .imageList[0]) {
+                                                                    docId = key;
+                                                                  }
+                                                                } else {
+                                                                  if (value.imageList[
+                                                                          0] ==
+                                                                      widget.fav
+                                                                              .imageList[
+                                                                          0]) {
+                                                                    docId = key;
+                                                                  }
+                                                                }
+                                                              });
+                                                            }
+                                                            if (widget.map ==
+                                                                null) {
+                                                              widget.prod_map
+                                                                  .forEach((key,
+                                                                      value) {
+                                                                if (widget
+                                                                        .product !=
+                                                                    null) {
+                                                                  if (value.imageList[
+                                                                          0] ==
+                                                                      widget
+                                                                          .product
+                                                                          .imageList[0]) {
+                                                                    docId = key;
+                                                                  }
+                                                                } else {
+                                                                  if (value.imageList[
+                                                                          0] ==
+                                                                      widget.fav
+                                                                              .imageList[
+                                                                          0]) {
+                                                                    docId = key;
+                                                                  }
+                                                                }
+                                                              });
+                                                            }
                                                           });
-                                                          // widget.model
-                                                          //     .firestoreAction(
-                                                          //         _isFav,
-                                                          //         docId,
-                                                          //         widget
-                                                          //             .user.uid,
-                                                          //         widget.name,
-                                                          //         widget
-                                                          //             .description,
-                                                          //         widget.price,
-                                                          //         widget
-                                                          //             .discount,
-                                                          //         widget
-                                                          //             .imageList);
+                                                          widget.model
+                                                              .firestoreAction(
+                                                                  _isFav,
+                                                                  docId,
+                                                                  widget
+                                                                      .user.uid,
+                                                                  product: widget
+                                                                      .product,
+                                                                  fav: widget
+                                                                      .fav);
                                                         }))
                                               ],
                                             ),
