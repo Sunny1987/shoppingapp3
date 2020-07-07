@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_conditional_rendering/conditional.dart';
+//import 'package:flutter_conditional_rendering/conditional.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
@@ -22,17 +22,11 @@ import 'package:shoppingapp2/widgets/mydrawer.dart';
 class ProductDetailsPage extends StatefulWidget {
   static String id = 'productdetails';
 
-  // final List<dynamic> imageList;
-  // final String name;
-  // final String price;
   final bool isFav;
-  // final String description;
-  // final String discount;
   final MainService model;
   final AppUser user;
   final Map<String, Favourites> map;
   final String docID;
-  // final String category;
   final Map<String, Product> prod_map;
   final Product product;
   final Favourites fav;
@@ -85,31 +79,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
     super.dispose();
   }
 
-  getUserCartCount(
-    QuerySnapshot snapshot,
-    AppUser user,
-  ) async {
-    var docs = await snapshot.documents;
-    List list =
-        docs.map((document) => Favourites.fromSnapshot(document)).toList();
-    return list.length;
-  }
-
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-    AppUser user = Provider.of<AppUser>(context);
-    final snapshot = await Firestore.instance
-        .collection('user_cart')
-        .where('id', isEqualTo: '${user.uid}')
-        .getDocuments();
-    num count = await getUserCartCount(snapshot, user);
-    setState(() {
-      _count = count;
-    });
-    print('cart count: $_count');
-  }
-
   @override
   Widget build(BuildContext context) {
     // _isFav = widget.isFav;
@@ -142,38 +111,124 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                         context: context, delegate: ProductSearch(names));
                   }),
               SizedBox(width: 40.0),
-              Stack(
-                children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.shopping_cart),
-                      onPressed: () {
-                        Navigator.pushNamed(context, ShoppingCart.id);
-                      }),
-                  Positioned(
-                    right: 7,
-                    top: 5,
-                    child: Container(
-                      padding: EdgeInsets.all(2),
-                      decoration: new BoxDecoration(
-                        color: Color(myyellow),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        '$_count',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                            fontFamily: 'Nexa',
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
+              
+              FutureBuilder<int>(
+                future: AuthService().getUserCartCount(context),
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  Widget countwidget;
+                  if (snapshot.hasData) {
+                    _count = snapshot.data;
+                    countwidget = Stack(
+                      children: <Widget>[
+                        IconButton(
+                            icon: Icon(Icons.shopping_cart),
+                            onPressed: () {
+                              Navigator.pushNamed(context, ShoppingCart.id);
+                            }),
+                        Positioned(
+                          right: 7,
+                          top: 5,
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: new BoxDecoration(
+                              color: Color(myyellow),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '$_count',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontFamily: 'Nexa',
+                                  fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    Stack(
+                      children: <Widget>[
+                        IconButton(
+                            icon: Icon(Icons.shopping_cart),
+                            onPressed: () {
+                              Navigator.pushNamed(context, ShoppingCart.id);
+                            }),
+                        Positioned(
+                          right: 7,
+                          top: 5,
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: new BoxDecoration(
+                              color: Color(myyellow),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '0',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontFamily: 'Nexa',
+                                  fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    countwidget = Stack(
+                      children: <Widget>[
+                        IconButton(
+                            icon: Icon(Icons.shopping_cart),
+                            onPressed: () {
+                              Navigator.pushNamed(context, ShoppingCart.id);
+                            }),
+                        Positioned(
+                          right: 7,
+                          top: 5,
+                          child: Container(
+                              padding: EdgeInsets.all(2),
+                              decoration: new BoxDecoration(
+                                color: Color(myyellow),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              child: SpinKitRing(
+                                color: Colors.white,
+                                size: 8.0,
+                                lineWidth: 1,
+                              )
+
+                              // Text(
+                              //   '0',
+                              //   style: TextStyle(
+                              //       color: Colors.white,
+                              //       fontSize: 8,
+                              //       fontFamily: 'Nexa',
+                              //       fontWeight: FontWeight.bold),
+                              //   textAlign: TextAlign.center,
+                              // ),
+                              ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return countwidget;
+                },
               )
             ],
           ),
@@ -975,24 +1030,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                                   _isUploading = true;
                                                 });
 
-                                                // bool _stat = await widget.model
-                                                //     .uploadUserCart(
-                                                //         user.uid,
-                                                //         widget.name,
-                                                //         widget.description,
-                                                //         widget.price,
-                                                //         widget.discount,
-                                                //         _quantity == 0
-                                                //             ? '1'
-                                                //             : '$_quantity',
-                                                //         //docId,
-                                                //         widget.imageList);
+                                                bool _stat = await widget.model
+                                                    .uploadUserCart(
+                                                        user.uid,
+                                                        _quantity == 0
+                                                            ? '1'
+                                                            : '$_quantity',
+                                                        //docId,
+                                                        product: widget.product,
+                                                        fav: widget.fav);
                                                 setState(() {
                                                   _isUploading = false;
                                                 });
 
                                                 setState(() {
-                                                  // _status = _stat;
+                                                  _status = _stat;
                                                 });
                                               },
                                               child: Container(

@@ -6,6 +6,7 @@ import 'dart:ui';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 //import 'package:scoped_model/scoped_model.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
@@ -61,87 +62,112 @@ class ProductSearch extends SearchDelegate<Product> {
     return ListView.builder(
         itemCount: searchList.length,
         itemBuilder: (ctx, index) {
-          return InkWell(
-            onTap: () async {
-              var data = searchList[index];
-              mymap = await AuthService().callFav(context, data.imageList[0]);
-              //ignore: missing_return
-              mymap.forEach((key, value) {
-                _isFav = key;
-                map = value;
-              });
+          return FutureBuilder<Map<bool, Map<String, Favourites>>>(
+            future:
+                AuthService().callFav(context, searchList[index].imageList[0]),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<bool, Map<String, Favourites>>> snapshot) {
+              Widget futurechild;
+              if (snapshot.hasData) {
+                mymap = snapshot.data;
+                mymap.forEach((key, value) {
+                  _isFav = key;
+                  map = value;
+                });
 
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ProductDetailsPage(
-                        product: data,
-                        // imageList: data.imageList,
-                        // name: data.name,
-                        // price: data.price,
-                        isFav: _isFav,
-                        // description: data.description,
-                        model: model,
-                        user: user,
-                        // discount: data.discount,
-                        map: map,
-                        // category: data.category,
-                      )));
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0),
-              decoration: BoxDecoration(
-                  color: Color(mywhite1),
-                  boxShadow: [
-                    BoxShadow(
-                        offset: Offset(0, 3.0),
-                        blurRadius: 3.0,
-                        color: Colors.grey)
-                  ],
-                  borderRadius: BorderRadius.circular(10.0)),
-              width: double.infinity,
-              height: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    height: 70,
-                    width: 100,
+                futurechild = InkWell(
+                  onTap: () async {
+                    var data = searchList[index];
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ProductDetailsPage(
+                              product: data,
+                              isFav: _isFav,
+                              model: model,
+                              user: user,
+                              map: map,
+                            )));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10.0),
-                          bottomLeft: Radius.circular(10.0)),
-                      image: DecorationImage(
-                          image: NetworkImage(searchList[index].imageList[0]),
-                          fit: BoxFit.fill),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 30.0,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          searchList[index].name,
-                          style: TextStyle(
-                            fontFamily: 'Nexa',
+                        color: Color(mywhite1),
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0, 1.0),
+                              blurRadius: 1.0,
+                              color: Colors.grey)
+                        ],
+                        //borderRadius: BorderRadius.circular(10.0),
+                        ),
+                    width: double.infinity,
+                    height: 70,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 70,
+                          width: 100,
+                          decoration: BoxDecoration(
+                            // borderRadius: BorderRadius.only(
+                            //     topLeft: Radius.circular(10.0),
+                            //     bottomLeft: Radius.circular(10.0),
+                            //     ),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    searchList[index].imageList[0]),
+                                fit: BoxFit.fill),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          searchList[index].price,
-                          style: TextStyle(
-                              fontFamily: 'Nexa', fontWeight: FontWeight.bold),
+                        SizedBox(
+                          width: 30.0,
                         ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                searchList[index].name,
+                                style: TextStyle(
+                                  fontFamily: 'Nexa',
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                searchList[index].price,
+                                style: TextStyle(
+                                    fontFamily: 'Nexa',
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                futurechild = Container(
+                  width: 100.0,
+                  height: 100.0,
+                  child: Text('Some Error Occured'),
+                );
+              } else {
+                futurechild = Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: SpinKitRing(
+                    lineWidth: 2,
+                    size: 26,
+                    color: Color(myyellow),
+                  ),
+                );
+              }
+
+              return futurechild;
+            },
+            //child: ,
           );
         });
   }

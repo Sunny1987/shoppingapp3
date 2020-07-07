@@ -141,12 +141,7 @@ Widget _callProductCard(DocumentSnapshot data, dynamic model, String category) {
   if (model == Cart) {
     final dataset = Cart.fromSnapshot(data);
     widget = CartCard(
-      name: dataset.name,
-      description: dataset.description,
-      price: dataset.price,
-      discount: dataset.discount,
-      imageList: dataset.imageList,
-      quantity: dataset.quantity,
+      cart: dataset,
     );
   }
 

@@ -5,24 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
 import 'package:shoppingapp2/models/appuser.dart';
+import 'package:shoppingapp2/models/cart_model.dart';
 import 'package:shoppingapp2/models/product_model.dart';
 import 'package:shoppingapp2/services/authservice.dart';
 import 'package:shoppingapp2/services/mainservice.dart';
 
 class CartCard extends StatefulWidget {
-  final String name;
-  final String price;
-  final String quantity;
-  final List<dynamic> imageList;
-  final String description;
-  final String discount;
-  CartCard(
-      {this.imageList,
-      this.price,
-      this.quantity,
-      this.name,
-      this.description,
-      this.discount});
+  final Cart cart;
+  CartCard({
+    this.cart,
+  });
 
   @override
   _CartCardState createState() => _CartCardState();
@@ -52,9 +44,9 @@ class _CartCardState extends State<CartCard> {
   @override
   Widget build(BuildContext context) {
     getCartDetails();
-      String quan = widget.quantity;
+    String quan = widget.cart.quantity;
     _quantity = int.parse(quan);
-      String pr = widget.price;
+    String pr = widget.cart.price;
     _price = double.parse(pr);
     return ScopedModelDescendant<MainService>(
       builder: (BuildContext context, Widget child, MainService model) {
@@ -82,7 +74,7 @@ class _CartCardState extends State<CartCard> {
                             topLeft: Radius.circular(10.0),
                             bottomLeft: Radius.circular(10.0)),
                         image: DecorationImage(
-                            image: NetworkImage(widget.imageList[0]),
+                            image: NetworkImage(widget.cart.imageList[0]),
                             fit: BoxFit.cover),
                       ),
                     ),
@@ -92,7 +84,7 @@ class _CartCardState extends State<CartCard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          '${widget.name}',
+                          '${widget.cart.name}',
                           style: TextStyle(
                             fontFamily: 'Nexa',
                           ),
@@ -124,12 +116,12 @@ class _CartCardState extends State<CartCard> {
                           child: Padding(
                             padding: const EdgeInsets.all(4.0),
                             child: InkWell(
-                              onTap: ()  {
+                              onTap: () {
                                 // print(_quantity);
-                                 
+
                                 setState(() {
                                   product.forEach((key, value) {
-                                    if (value.name == widget.name) {
+                                    if (value.name == widget.cart.name) {
                                       docId = key;
                                     }
                                   });
@@ -137,12 +129,8 @@ class _CartCardState extends State<CartCard> {
                                   _quantity = _quantity + 1;
                                   _price = _price * _quantity;
                                 });
-                                model.uploadCart(
-                                  user.uid,
-                                  _price.toString(),
-                                  _quantity.toString(),
-                                  docId
-                                );
+                                model.uploadCart(user.uid, _price.toString(),
+                                    _quantity.toString(), docId);
                               },
                               child: Icon(
                                 Icons.add,
@@ -166,25 +154,21 @@ class _CartCardState extends State<CartCard> {
                           child: Padding(
                             padding: const EdgeInsets.all(4.0),
                             child: InkWell(
-                              onTap: ()  {
+                              onTap: () {
                                 //await getCartDetails();
                                 setState(() {
                                   if (_quantity > 1) {
                                     _quantity = _quantity - 1;
                                     _price = _price * _quantity;
                                     product.forEach((key, value) {
-                                      if (value.name == widget.name) {
+                                      if (value.name == widget.cart.name) {
                                         docId = key;
                                       }
                                     });
                                   }
                                 });
-                                model.uploadCart(
-                                  user.uid,
-                                  _price.toString(),
-                                  _quantity.toString(),
-                                  docId
-                                );
+                                model.uploadCart(user.uid, _price.toString(),
+                                    _quantity.toString(), docId);
                               },
                               child: Icon(
                                 Icons.remove,
