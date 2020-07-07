@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Product {
   String name;
   String description;
-  String price;
-  String discount;
+  num price;
+  num discount;
   List<dynamic> imageList;
   String category;
   DocumentReference refernce;

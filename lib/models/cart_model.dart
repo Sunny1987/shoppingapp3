@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Cart {
   String name;
   String description;
-  String price;
-  String discount;
+  num price;
+  num discount;
   List<dynamic> imageList;
-  String quantity;
+  num quantity;
   //String category;
   DocumentReference refernce;
 

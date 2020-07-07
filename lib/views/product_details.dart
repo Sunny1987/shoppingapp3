@@ -111,7 +111,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                         context: context, delegate: ProductSearch(names));
                   }),
               SizedBox(width: 40.0),
-              
+
               FutureBuilder<int>(
                 future: AuthService().getUserCartCount(context),
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
@@ -329,8 +329,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                                 ),
                                                 Text(
                                                     widget.product != null
-                                                        ? widget.product.name
-                                                        : widget.fav.name
+                                                        ? '${widget.product.name}'
+                                                        : '${widget.fav.name}'
                                                     //'${widget.product.name}'
                                                     ,
                                                     style: TextStyle(
@@ -342,8 +342,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                                 ),
                                                 Text(
                                                     widget.product != null
-                                                        ? widget.product.price
-                                                        : widget.fav.price
+                                                        ? '₹ ${widget.product.price.toStringAsFixed(2)}'
+                                                        : '₹ ${widget.fav.price.toStringAsFixed(2)}'
                                                     //'${widget.product.price}'
                                                     ,
                                                     style: TextStyle(
@@ -449,7 +449,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                                 ),
                                                 Text(
                                                   widget.product != null
-                                                      ? widget.product.name
+                                                      ? widget.product.description
                                                       : widget.fav.description
                                                   //'${widget.product.description}'
                                                   ,
@@ -1034,8 +1034,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                                     .uploadUserCart(
                                                         user.uid,
                                                         _quantity == 0
-                                                            ? '1'
-                                                            : '$_quantity',
+                                                            ? 1
+                                                            : _quantity,
                                                         //docId,
                                                         product: widget.product,
                                                         fav: widget.fav);

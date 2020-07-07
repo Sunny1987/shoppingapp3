@@ -136,7 +136,7 @@ class ProductSearch extends SearchDelegate<Product> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                searchList[index].price,
+                                '${searchList[index].price}',
                                 style: TextStyle(
                                     fontFamily: 'Nexa',
                                     fontWeight: FontWeight.bold),

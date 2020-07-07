@@ -83,7 +83,7 @@ class _ProductCardState extends State<ProductCard> {
                                   fontFamily: 'Nexa', color: Color(myyellow)),
                             ),
                             Text(
-                              '${widget.product.price}',
+                              '₹ ${(widget.product.price).toStringAsFixed(2)}',
                               style: TextStyle(
                                   fontFamily: 'Nexa', color: Color(myyellow)),
                             ),

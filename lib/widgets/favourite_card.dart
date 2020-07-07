@@ -83,7 +83,7 @@ class _FavouriteCardState extends State<FavouriteCard> {
                                   fontFamily: 'Nexa', color: Color(myyellow)),
                             ),
                             Text(
-                              '${widget.fav.price}',
+                              '₹ ${(widget.fav.price).toStringAsFixed(2)}',
                               style: TextStyle(
                                   fontFamily: 'Nexa', color: Color(myyellow)),
                             ),

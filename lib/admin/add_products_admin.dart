@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 //import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
-import 'package:flutter_absolute_path/flutter_absolute_path.dart';
+//import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shoppingapp2/admin/image_capture.dart';
 import 'package:shoppingapp2/app_consts/app_var.dart';
-import 'package:shoppingapp2/services/authservice.dart';
+//import 'package:shoppingapp2/services/authservice.dart';
 //import 'package:testapp1/admin/image_capture.dart';
 //import 'package:shoppingapp2/services/main_service.dart';
 import 'package:shoppingapp2/services/mainservice.dart';
@@ -22,7 +22,11 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
-  String name, description, price, discount, category = 'Saree';
+  String name, description, category = 'Saree';
+  // price, 
+  // discount, category = 'Saree';
+  num price,discount;
+
   GlobalKey<FormState> _globalFormKey = GlobalKey();
   GlobalKey<ScaffoldState> _scaffoldStateKey = GlobalKey();
   bool _isUploading = false;
@@ -36,47 +40,10 @@ class _AddProductState extends State<AddProduct> {
   List<File> imageFiles;
   bool _uploadstatus = false;
 
-  // getImage(MainService model) async {
-  //   map = await model.images.asMap();
-  //   imageFiles = [];
-  //   img = map[0];
-  //   // map.forEach((key, value) async {
-  //   //   String path = await FlutterAbsolutePath.getAbsolutePath(value.identifier);
-  //   //   file = File(path);
-  //   //   imageFiles.add(file);
-  //   // });
-  //   imageFiles.clear();
-  //   for (Asset asset in model.images) {
-  //     String path = await FlutterAbsolutePath.getAbsolutePath(asset.identifier);
-  //     file = File(path);
-  //     imageFiles.add(file);
-  //   }
-
-  //   model.setImageFiles(imageFiles);
-  //   filemap = imageFiles.asMap();
-  //   file = filemap[0];
-  //   print('file : $file');
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainService>(
       builder: (BuildContext context, Widget child, MainService model) {
-        // img = _images[0];
-        // print(img);
-        // if (model.images != null) {
-        //   getImage(model);
-        // }
         print(model.imageFileList);
         imageFiles = model.imageFileList;
         return SafeArea(
@@ -262,17 +229,6 @@ class _AddProductState extends State<AddProduct> {
       //call the firebase method
       status = await model.uploadAllProductDataToFirebase(
           model.imageFileList, name, description, price, discount, category);
-
-      // if (status) {
-      //   SnackBar snackBar =
-      //       SnackBar(content: Text("Product item successfully added."));
-      //   _scaffoldStateKey.currentState.showSnackBar(snackBar);
-      //   Navigator.pop(context);
-      // } else {
-      //   SnackBar snackBar =
-      //       SnackBar(content: Text("Product item upload failed."));
-      //   _scaffoldStateKey.currentState.showSnackBar(snackBar);
-      // }
     }
     return status;
   }
@@ -310,10 +266,10 @@ class _AddProductState extends State<AddProduct> {
             description = value.trim();
           }
           if (sareeText == 'Saree price') {
-            price = value.trim();
+            price = num.parse(value.trim());
           }
           if (sareeText == 'Saree discount') {
-            discount = value.trim();
+            discount = num.parse(value.trim());
           }
         },
       ),
